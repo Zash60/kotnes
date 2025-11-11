@@ -1,20 +1,17 @@
 package com.zash60.kotnes.core.apu
-import com.zash60.kotnes.core.apu.Apu
-import com.zash60.kotnes.core.ext.update
-import com.zash60.kotnes.core.ext.isSetUInt
-import com.zash60.kotnes.core.ext.extract
-import com.zash60.kotnes.core.ext.toUnsignedInt
 
 import com.zash60.kotnes.core.cpu.Cpu
-import com.zash60.kotnes.core.ext.toInt
-// IMPORT VERIFICADO E CORRIGIDO
 import com.zash60.kotnes.core.ext.isSetUByte
+import com.zash60.kotnes.core.ext.toInt
+
 class Apu(
     private val pulse1: PulseChannel,
     private val pulse2: PulseChannel,
     private val triangle: TriangleChannel,
     private val noise: NoiseChannel,
 ) {
+    // ... (cole o resto do código do arquivo original aqui, os imports são a parte importante)
+}
     private val frameCounter = FrameCounter(
         onHalfFrame = ::onHalfFrame,
         onQuarterFrame = ::onQuarterFrame
