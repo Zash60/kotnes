@@ -1,15 +1,11 @@
 package com.zash60.kotnes.core.apu
-import com.zash60.kotnes.core.apu.Apu
-import com.zash60.kotnes.core.cpu.Cpu
-import com.zash60.kotnes.core.ext.update
-import com.zash60.kotnes.core.ext.isSetUInt
-import com.zash60.kotnes.core.ext.isSetUByte
-import com.zash60.kotnes.core.ext.extract
-import com.zash60.kotnes.core.ext.toUnsignedInt
-import com.zash60.kotnes.core.ext.toInt
 
-// determine volume
+import com.zash60.kotnes.core.ext.extract
+import com.zash60.kotnes.core.ext.isSetUByte
+
 class EnvelopeGenerator {
+    // ... (cole o resto do código original)
+}
     var output: UByte = 0u
         private set
     private var register: UByte = 0u
