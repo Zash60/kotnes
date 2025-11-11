@@ -1,5 +1,6 @@
-package com.zash60.kotnes.core
+package com.zash60.kotnes.core // PACOTE CORRIGIDO
 
+// IMPORTS CORRIGIDOS
 import com.zash60.kotnes.core.apu.*
 import com.zash60.kotnes.core.cartridge.Cartridge
 import com.zash60.kotnes.core.cartridge.Rom
@@ -52,7 +53,6 @@ class Emulator(
             envelopeGenerator = EnvelopeGenerator(),
             lengthCounter = LengthCounter(),
         )
-        // A linha 'speaker = Speaker()' foi removida daqui
     )
     private val wRam = Ram(0x2048)
     private val prgRom = Rom(cartridge.program)
@@ -105,7 +105,7 @@ class Emulator(
                 break
             }
         }
-        // apu.flush() // Chamada comentada
+        // apu.flush()
     }
 
     companion object {
