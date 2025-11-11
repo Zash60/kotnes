@@ -1,14 +1,14 @@
-package com.zash60.kotnes.core.apu
+package com.zash60.kotnes.core.apu // PACOTE CORRIGIDO
 
-import com.zash60.kotnes.core.cpu.Cpu
-import com.zash60.kotnes.core.ext.toInt
+import com.zash60.kotnes.core.cpu.Cpu // IMPORT CORRIGIDO
+import com.zash60.kotnes.core.ext.toInt // IMPORT CORRIGIDO
+import com.zash60.kotnes.core.ext.isSetUByte // IMPORT CORRIGIDO
 
 class Apu(
     private val pulse1: PulseChannel,
     private val pulse2: PulseChannel,
     private val triangle: TriangleChannel,
     private val noise: NoiseChannel,
-    // A referência ao 'speaker' foi removida do construtor
 ) {
 
     private val frameCounter = FrameCounter(
@@ -27,7 +27,6 @@ class Apu(
                 val p2 = (pulse2.lengthCounterValue > 0).toInt()
                 val triangle = (triangle.lengthCounterValue > 0).toInt()
                 val noise = (noise.lengthCounterValue > 0).toInt()
-                // TODO: support DMC and frame interrupt and DMC active
                 return p1 + (p2 shl 1) + (triangle shl 2) + (noise shl 3)
             }
 
@@ -66,8 +65,6 @@ class Apu(
                 if (!data.isSetUByte(3u)) {
                     noise.disable()
                 }
-
-                // TODO: support DMC
             }
 
             0x17 -> {
@@ -93,13 +90,12 @@ class Apu(
     }
 
     fun flush() {
-        // speaker.flush() // Chamada comentada
+        // speaker.flush()
     }
 
     private fun onCpuCycle() {
         triangle.tickTimer()
         noise.tickTimer()
-
         frameCounter.tick()
     }
 
@@ -112,35 +108,30 @@ class Apu(
         pulse1.tickEnvelope()
         pulse2.tickEnvelope()
         noise.tickEnvelope()
-
         triangle.tickLinearCounter()
     }
+
+
 
     private fun onHalfFrame() {
         pulse1.tickLengthCounter()
         pulse2.tickLengthCounter()
         triangle.tickLengthCounter()
         noise.tickLengthCounter()
-
         pulse1.tickSweepUnit()
         pulse2.tickSweepUnit()
     }
 
     private fun tickMixer() {
-        // Linear Approximation
-        // see: https://www.nesdev.org/wiki/APU_Mixer
         val mixedPulse = (pulse1.output + pulse2.output).toByte() * 0.00752
         val mixed = mixedPulse +
                 triangle.output.toByte() * 0.00851 +
                 noise.output.toByte() * 0.00494
-        // TODO: low & high -pass filter
-        // speaker.write(mixed) // Chamada comentada
+        // speaker.write(mixed)
     }
 
     companion object {
         const val APU_HZ = 240
-
-        // Valor fixo para substituir o cálculo que dependia do Speaker
         private const val MIXER_STEP_CYCLES = 40 // Era: Cpu.CPU_HZ / Speaker.SAMPLE_RATE
     }
 }
