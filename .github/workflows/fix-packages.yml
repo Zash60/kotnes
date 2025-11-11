@@ -47,6 +47,7 @@ jobs:
             correct_package=$(echo "$package_path" | sed 's|/|.|g')
             
             # Substitui a linha 'package' antiga pela correta no arquivo
+            # Usa um delimitador diferente para sed, caso os caminhos contenham barras
             sed -i "s|^package.*|package $correct_package|" "$file"
             echo "  - Set package to: $correct_package"
 
@@ -69,7 +70,8 @@ jobs:
           git config --local user.name "GitHub Action"
           
           # Adiciona todas as alterações feitas nos arquivos
-          git add "$CORE_SRC_DIR"
+          # --- LINHA CORRIGIDA ABAIXO ---
+          git add app/src/main/kotlin/com/zash60/kotnes/core/
           
           if ! git diff-index --quiet HEAD; then
             git commit -m "fix(core): Correct package and import statements for Android structure"
