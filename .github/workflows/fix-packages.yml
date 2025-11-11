@@ -1,5 +1,5 @@
 # Nome do workflow
-name: Fix All Missing Imports
+name: Fix Everything (Packages, Imports, Syntax)
 
 # Gatilho: Apenas manual (workflow_dispatch)
 on:
@@ -18,53 +18,173 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Roda o script principal de correção de imports
-      - name: Run Import Refactor Script
+      # 2. Roda o script principal de correção
+      - name: Run Final Refactor Script
         run: |
-          echo "### STARTING FINAL IMPORT FIX ###"
+          echo "### STARTING FINAL REFACTOR SCRIPT ###"
           CORE_SRC_DIR="app/src/main/kotlin/com/zash60/kotnes/core"
           
           # Itera em todos os arquivos .kt dentro da pasta /core
           find "$CORE_SRC_DIR" -name "*.kt" | while read file; do
-            echo "Processing File: $file"
-            
-            # Garante que a declaração do pacote está correta
+            echo "--- Processing File: $file ---"
+
+            # --- Passo A: Limpeza dos imports antigos ---
+            # Remove todas as linhas que começam com "import", limpando a bagunça
+            sed -i '/^import /d' "$file"
+            echo "  - Cleared old imports."
+
+            # --- Passo B: Correção da declaração 'package' ---
             dir=$(dirname "$file")
             package_path=${dir#"app/src/main/kotlin/"}
             correct_package=$(echo "$package_path" | sed 's|/|.|g')
             sed -i "1s|^.*|package $correct_package|" "$file"
+            echo "  - Set package to: $correct_package"
 
-            # Lista de imports a serem garantidos
-            IMPORTS_TO_ADD=(
-              "com.zash60.kotnes.core.ext.toInt"
-              "com.zash60.kotnes.core.ext.toUnsignedInt"
-              "com.zash60.kotnes.core.ext.extract"
-              "com.zash60.kotnes.core.ext.isSetUByte"
-              "com.zash60.kotnes.core.ext.isSetUInt"
-              "com.zash60.kotnes.core.ext.update"
-              "com.zash60.kotnes.core.cpu.Cpu"
-              "com.zash60.kotnes.core.apu.Apu"
-            )
+            # --- Passo C: Adiciona um bloco de imports limpo ---
+            # Este bloco contém todos os imports que podem ser necessários
+            IMPORT_BLOCK="
+            import com.zash60.kotnes.core.apu.*
+            import com.zash60.kotnes.core.cartridge.*
+            import com.zash60.kotnes.core.cpu.*
+            import com.zash60.kotnes.core.dma.*
+            import com.zash60.kotnes.core.exception.*
+            import com.zash60.kotnes.core.ext.*
+            import com.zash60.kotnes.core.interrupts.*
+            import com.zash60.kotnes.core.pad.*
+            import com.zash60.kotnes.core.ppu.*
+            import com.zash60.kotnes.core.ram.*
+            import com.zash60.kotnes.core.util.*
+            import java.io.File
+            import java.math.BigInteger
+            import kotlin.math.pow
+            import kotlin.math.round
+            "
+            # Adiciona o bloco de imports logo após a linha do pacote
+            sed -i "/^package /r /dev/stdin" "$file" <<< "$IMPORT_BLOCK"
+            echo "  - Added clean import block."
 
-            # Adiciona os imports que faltam logo após a linha do pacote
-            for import_line in "${IMPORTS_TO_ADD[@]}"; do
-              # Verifica se o import já não existe no arquivo
-              if ! grep -q "import $import_line" "$file"; then
-                # Adiciona o import se o arquivo usa alguma palavra-chave relacionada
-                # (Isso evita adicionar imports desnecessários em todos os arquivos)
-                # Usamos um curinga simples para verificar o uso.
-                if grep -q -E "(toInt|toUnsignedInt|extract|isSetUByte|isSetUInt|update|Cpu|Apu)" "$file"; then
-                  sed -i "/^package /a import $import_line" "$file"
-                  echo "  - Added import: $import_line"
-                fi
-              fi
-            done
           done
           
-          # Remove imports duplicados que possam ter sido adicionados
-          find "$CORE_SRC_DIR" -name "*.kt" -exec sh -c 'awk "!seen[\$0]++" "$0" > "$0.tmp" && mv "$0.tmp" "$0"' {} \;
+          # --- Passo D: Substitui Emulator.kt completamente ---
+          echo "### REPLACING Emulator.kt ###"
+          EMULATOR_FILE="$CORE_SRC_DIR/Emulator.kt"
+          cat > "$EMULATOR_FILE" << 'EOF'
+          package com.zash60.kotnes.core
 
-          echo "### FINISHED FINAL IMPORT FIX ###"
+          import com.zash60.kotnes.core.apu.*
+          import com.zash60.kotnes.core.cartridge.Cartridge
+          import com.zash60.kotnes.core.cartridge.Rom
+          import com.zash60.kotnes.core.cpu.Cpu
+          import com.zash60.kotnes.core.cpu.CpuBus
+          import com.zash60.kotnes.core.dma.Dma
+          import com.zash60.kotnes.core.ext.toUnsignedInt
+          import com.zash60.kotnes.core.interrupts.Interrupts
+          import com.zash60.kotnes.core.pad.KeyEvent
+          import com.zash60.kotnes.core.pad.Pad
+          import com.zash60.kotnes.core.ppu.Canvas
+          import com.zash60.kotnes.core.ppu.Ppu
+          import com.zash60.kotnes.core.ram.Ram
+          import kotlin.math.round
+
+          class Emulator(
+              cartridge: Cartridge,
+              canvas: Canvas,
+              keyEvent: KeyEvent,
+          ) {
+              private val interrupts = Interrupts()
+              private val chrRam = Ram(0x4000).apply {
+                  cartridge.character.forEachIndexed { idx, data ->
+                      write(idx, data.toUnsignedInt())
+                  }
+              }
+
+              private val ppu = Ppu(
+                  chrRam = chrRam,
+                  canvas = canvas,
+                  interrupts = interrupts,
+                  isHorizontalMirror = cartridge.isHorizontalMirror
+              )
+
+              private val apu = Apu(
+                  pulse1 = PulseChannel(
+                      envelopeGenerator = EnvelopeGenerator(),
+                      lengthCounter = LengthCounter(),
+                      isChannelOne = true,
+                  ),
+                  pulse2 = PulseChannel(
+                      envelopeGenerator = EnvelopeGenerator(),
+                      lengthCounter = LengthCounter(),
+                      isChannelOne = false,
+                  ),
+                  triangle = TriangleChannel(
+                      lengthCounter = LengthCounter(),
+                  ),
+                  noise = NoiseChannel(
+                      envelopeGenerator = EnvelopeGenerator(),
+                      lengthCounter = LengthCounter(),
+                  )
+              )
+              private val wRam = Ram(0x2048)
+              private val prgRom = Rom(cartridge.program)
+              private val dma = Dma(ppu, wRam)
+              private val pad = Pad(keyEvent)
+
+              private val cpuBus = CpuBus(
+                  ppu = ppu,
+                  apu = apu,
+                  ram = wRam,
+                  rom = prgRom,
+                  dma = dma,
+                  pad = pad
+              )
+
+              private val cpu = Cpu(
+                  bus = cpuBus,
+                  interrupts = interrupts
+              )
+
+              private var sleepMargin = 0L
+
+              fun start() {
+                  while (true) {
+                      val frameStartNs = System.nanoTime()
+                      stepFrame()
+                      val frameEndNs = System.nanoTime()
+
+                      val sleepTimeNs = (FRAME_NS - (frameEndNs - frameStartNs)) + sleepMargin
+                      val sleepTimeMs = sleepTimeNs / 1000_000
+                      val sleepStartNs = System.nanoTime()
+                      if (sleepTimeMs > 0) {
+                          Thread.sleep(sleepTimeMs)
+                      }
+                      val sleepEnd = System.nanoTime()
+                      sleepMargin = sleepTimeNs - (sleepEnd - sleepStartNs)
+                  }
+              }
+
+              private fun stepFrame() {
+                  while (true) {
+                      var cpuCycle = 0
+                      if (dma.isProcessing) {
+                          dma.run()
+                          cpuCycle = 514
+                      }
+                      cpuCycle += cpu.run()
+                      apu.run(cpuCycle)
+                      if (ppu.run(cpuCycle * 3)) {
+                          break
+                      }
+                  }
+              }
+
+              companion object {
+                  private val FRAME_NS = round(1.0 / 60 * 1000_000_000).toInt() // 60fps
+              }
+          }
+          EOF
+          echo "Emulator.kt replaced with a clean version."
+
+          echo "### SCRIPT FINISHED ###"
 
       # 3. Faz o commit de todas as alterações
       - name: Commit and push changes
@@ -72,12 +192,10 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           
-          # Adiciona TODAS as mudanças no repositório
           git add .
           
-          # Verifica se há algo para commitar
           if ! git diff-index --quiet HEAD; then
-            git commit -m "fix(core): Add all missing ext imports and correct packages"
+            git commit -m "chore(build): Final fix for all packages, imports, and syntax"
             git push
           else
             echo "No changes were needed."
