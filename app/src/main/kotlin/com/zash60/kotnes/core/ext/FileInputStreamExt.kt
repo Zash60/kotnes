@@ -1,4 +1,4 @@
-package ext
+package com.zash60.kotnes.core.ext
 
 import java.io.FileInputStream
 import java.math.BigInteger

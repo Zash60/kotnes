@@ -1,6 +1,6 @@
-package pad
+package com.zash60.kotnes.core.pad
 
-import ext.toInt
+import com.zash60.kotnes.core.ext.toInt
 
 class Pad(
     keyEvent: KeyEvent,

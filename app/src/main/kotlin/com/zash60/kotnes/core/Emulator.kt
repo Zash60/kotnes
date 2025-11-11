@@ -1,4 +1,4 @@
-package com.zash60.kotnes.core // PACOTE CORRIGIDO
+package com.zash60.kotnes.core
 
 // IMPORTS CORRIGIDOS
 import com.zash60.kotnes.core.apu.*

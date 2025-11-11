@@ -1,4 +1,4 @@
-package cpu
+package com.zash60.kotnes.core.cpu
 
 data class Opcode(
         val instruction: Instruction,

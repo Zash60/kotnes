@@ -1,6 +1,6 @@
-package apu
+package com.zash60.kotnes.core.apu
 
-import ext.toInt
+import com.zash60.kotnes.core.ext.toInt
 import kotlin.math.pow
 
 fun UByte.extract(range: IntRange): UByte {

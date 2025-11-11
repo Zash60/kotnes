@@ -1,4 +1,4 @@
-package com.zash60.kotnes.ui
+package com.zash60.kotnes.core.ui
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize

@@ -1,4 +1,4 @@
-package apu
+package com.zash60.kotnes.core.apu
 
 class LengthCounter {
     var value: Int = 1

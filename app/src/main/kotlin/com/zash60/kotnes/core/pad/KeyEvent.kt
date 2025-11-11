@@ -1,4 +1,4 @@
-package pad
+package com.zash60.kotnes.core.pad
 
 interface KeyEvent {
     fun listen(listener: KeyEventListener)

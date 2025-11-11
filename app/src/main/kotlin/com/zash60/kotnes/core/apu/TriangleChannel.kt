@@ -1,4 +1,4 @@
-package apu
+package com.zash60.kotnes.core.apu
 
 class TriangleChannel(private val lengthCounter: LengthCounter) {
     val lengthCounterValue: Int get() = lengthCounter.value

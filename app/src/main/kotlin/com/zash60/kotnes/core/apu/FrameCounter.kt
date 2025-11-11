@@ -1,6 +1,6 @@
-package apu
+package com.zash60.kotnes.core.apu
 
-import cpu.Cpu
+import com.zash60.kotnes.core.cpu.Cpu
 
 class FrameCounter(
     private val onQuarterFrame: () -> Any,

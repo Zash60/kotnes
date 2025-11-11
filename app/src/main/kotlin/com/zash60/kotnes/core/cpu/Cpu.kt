@@ -1,8 +1,8 @@
 com.zash60.kotnes.core.cpu
 
-import exception.UnknownOpcodeException
-import ext.toInt
-import interrupts.Interrupts
+import com.zash60.kotnes.core.exception.UnknownOpcodeException
+import com.zash60.kotnes.core.ext.toInt
+import com.zash60.kotnes.core.interrupts.Interrupts
 
 class Cpu(
     private val bus: CpuBus,

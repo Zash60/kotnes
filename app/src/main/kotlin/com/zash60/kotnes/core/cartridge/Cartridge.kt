@@ -1,8 +1,8 @@
-package cartridge
+package com.zash60.kotnes.core.cartridge
 
-import ext.read
-import ext.readAsHex
-import ext.readAsInt
+import com.zash60.kotnes.core.ext.read
+import com.zash60.kotnes.core.ext.readAsHex
+import com.zash60.kotnes.core.ext.readAsInt
 import java.io.File
 
 class Cartridge(rom: File) {

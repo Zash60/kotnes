@@ -1,6 +1,6 @@
-package cartridge
+package com.zash60.kotnes.core.cartridge
 
-import ext.toUnsignedInt
+import com.zash60.kotnes.core.ext.toUnsignedInt
 
 class Rom(
     private val data: ByteArray,

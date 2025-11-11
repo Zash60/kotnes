@@ -1,11 +1,11 @@
-package cpu
+package com.zash60.kotnes.core.cpu
 
-import apu.Apu
-import cartridge.Rom
-import dma.Dma
-import pad.Pad
-import ppu.Ppu
-import ram.Ram
+import com.zash60.kotnes.core.apu.Apu
+import com.zash60.kotnes.core.cartridge.Rom
+import com.zash60.kotnes.core.dma.Dma
+import com.zash60.kotnes.core.pad.Pad
+import com.zash60.kotnes.core.ppu.Ppu
+import com.zash60.kotnes.core.ram.Ram
 
 class CpuBus(
     private val ppu: Ppu,

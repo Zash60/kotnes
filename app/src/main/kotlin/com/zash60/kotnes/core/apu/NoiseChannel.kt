@@ -1,4 +1,4 @@
-package apu
+package com.zash60.kotnes.core.apu
 
 class NoiseChannel(
     private val envelopeGenerator: EnvelopeGenerator,

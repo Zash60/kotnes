@@ -1,4 +1,4 @@
-package util
+package com.zash60.kotnes.core.util
 
 fun pairs(x: IntRange, y: IntRange) = x.flatMap { i -> y.map { j -> Pair(i, j) } }
 

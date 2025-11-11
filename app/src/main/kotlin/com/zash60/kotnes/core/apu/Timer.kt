@@ -1,4 +1,4 @@
-package apu
+package com.zash60.kotnes.core.apu
 
 class Timer(
     private val onRing: () -> UInt, // returns new counter

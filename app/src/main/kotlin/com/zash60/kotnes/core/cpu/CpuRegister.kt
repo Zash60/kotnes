@@ -1,6 +1,6 @@
-package cpu
+package com.zash60.kotnes.core.cpu
 
-import ext.toInt
+import com.zash60.kotnes.core.ext.toInt
 
 class CpuRegister {
     var a = 0 // accumulator

@@ -1,9 +1,9 @@
-package ppu
+package com.zash60.kotnes.core.ppu
 
-import interrupts.Interrupts
-import ram.Ram
-import util.pairs
-import util.twoDim
+import com.zash60.kotnes.core.interrupts.Interrupts
+import com.zash60.kotnes.core.ram.Ram
+import com.zash60.kotnes.core.util.pairs
+import com.zash60.kotnes.core.util.twoDim
 
 class Ppu(
     private val chrRam: Ram,

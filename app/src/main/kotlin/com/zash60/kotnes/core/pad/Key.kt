@@ -1,4 +1,4 @@
-package pad
+package com.zash60.kotnes.core.pad
 
 enum class Key(val keyCode: Int) {
     A(0),

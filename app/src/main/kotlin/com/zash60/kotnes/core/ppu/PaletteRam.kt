@@ -1,6 +1,6 @@
-package ppu
+package com.zash60.kotnes.core.ppu
 
-import ram.Ram
+import com.zash60.kotnes.core.ram.Ram
 
 class PaletteRam {
     private val ram = Ram(0x20)

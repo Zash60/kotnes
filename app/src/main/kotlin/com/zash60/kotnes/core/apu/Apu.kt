@@ -1,4 +1,4 @@
-package com.zash60.kotnes.core.apu // PACOTE CORRIGIDO
+package com.zash60.kotnes.core.apu
 
 import com.zash60.kotnes.core.cpu.Cpu // IMPORT CORRIGIDO
 import com.zash60.kotnes.core.ext.toInt // IMPORT CORRIGIDO

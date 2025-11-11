@@ -1,4 +1,4 @@
-package apu
+package com.zash60.kotnes.core.apu
 
 // determine volume
 class EnvelopeGenerator {

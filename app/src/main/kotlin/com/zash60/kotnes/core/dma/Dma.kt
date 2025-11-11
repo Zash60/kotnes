@@ -1,7 +1,7 @@
-package dma
+package com.zash60.kotnes.core.dma
 
-import ppu.Ppu
-import ram.Ram
+import com.zash60.kotnes.core.ppu.Ppu
+import com.zash60.kotnes.core.ram.Ram
 
 class Dma(
     private val ppu: Ppu,

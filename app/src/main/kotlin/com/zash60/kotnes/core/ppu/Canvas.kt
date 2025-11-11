@@ -1,4 +1,4 @@
-package ppu
+package com.zash60.kotnes.core.ppu
 
 interface Canvas {
     fun bulkDrawDots(data: List<RenderingData>) {

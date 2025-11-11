@@ -1,4 +1,4 @@
-package ram
+package com.zash60.kotnes.core.ram
 
 class Ram(
     size: Int,
