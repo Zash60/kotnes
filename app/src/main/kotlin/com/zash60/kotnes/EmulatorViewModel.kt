@@ -5,8 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-// IMPORT ADICIONADO PARA CORRIGIR O ERRO
-import com.zash60.kotnes.ui.*
+// IMPORT CORRIGIDO PARA APONTAR PARA A LOCALIZAÇÃO CORRETA DA UI
+import com.zash60.kotnes.core.ui.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -17,26 +17,13 @@ class EmulatorViewModel : ViewModel() {
     private val bitmap = Bitmap.createBitmap(SCREEN_WIDTH, SCREEN_HEIGHT, Bitmap.Config.ARGB_8888)
     private val pixelBuffer = IntArray(SCREEN_WIDTH * SCREEN_HEIGHT)
 
-    // --- INTEGRAÇÃO DO EMULADOR AQUI ---
-    // PASSO 1: Descomente e instancie seu emulador quando tiver movido os arquivos
-    // private val emulator = Emulator()
-
     fun start() {
-        // Inicia o game loop em uma thread de background
         viewModelScope.launch(Dispatchers.Default) {
             while (true) {
-                // PASSO 2: Substitua este bloco pela lógica do seu emulador
-                // A lógica deve:
-                // 1. Rodar um frame completo do emulador (ex: emulator.runFrame())
-                // 2. Pedir ao PPU o array de pixels do frame (ex: val pixels = emulator.ppu.getPixels())
-                // 3. Copiar esses pixels para o `pixelBuffer`
-
-                // --- INÍCIO DO CÓDIGO DE EXEMPLO (SUBSTITUIR DEPOIS) ---
                 // Gera "ruído" aleatório para mostrar que a tela está funcionando
                 for (i in pixelBuffer.indices) {
                     pixelBuffer[i] = (0xFF000000.toInt() or (0..0xFFFFFF).random())
                 }
-                // --- FIM DO CÓDIGO DE EXEMPLO ---
 
                 // Atualiza o bitmap com os novos pixels
                 bitmap.setPixels(pixelBuffer, 0, SCREEN_WIDTH, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
