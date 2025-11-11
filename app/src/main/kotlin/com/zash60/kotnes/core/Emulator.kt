@@ -14,12 +14,14 @@ import com.zash60.kotnes.core.ppu.Canvas
 import com.zash60.kotnes.core.ppu.Ppu
 import com.zash60.kotnes.core.ram.Ram
 import kotlin.math.round
+import java.io.InputStream
 
 class Emulator(
-    cartridge: Cartridge,
-    canvas: Canvas,
+    romInputStream: InputStream,
+    private val canvas: Canvas,
     keyEvent: KeyEvent,
 ) {
+    private val cartridge = Cartridge(romInputStream)
     private val interrupts = Interrupts()
     private val chrRam = Ram(0x4000).apply {
         cartridge.character.forEachIndexed { idx, data ->
@@ -72,26 +74,7 @@ class Emulator(
         interrupts = interrupts
     )
 
-    private var sleepMargin = 0L
-
-    fun start() {
-        while (true) {
-            val frameStartNs = System.nanoTime()
-            stepFrame()
-            val frameEndNs = System.nanoTime()
-
-            val sleepTimeNs = (FRAME_NS - (frameEndNs - frameStartNs)) + sleepMargin
-            val sleepTimeMs = sleepTimeNs / 1000_000
-            val sleepStartNs = System.nanoTime()
-            if (sleepTimeMs > 0) {
-                Thread.sleep(sleepTimeMs)
-            }
-            val sleepEnd = System.nanoTime()
-            sleepMargin = sleepTimeNs - (sleepEnd - sleepStartNs)
-        }
-    }
-
-    private fun stepFrame() {
+    fun stepFrame() {
         while (true) {
             var cpuCycle = 0
             if (dma.isProcessing) {
@@ -104,9 +87,5 @@ class Emulator(
                 break
             }
         }
-    }
-
-    companion object {
-        private val FRAME_NS = round(1.0 / 60 * 1000_000_000).toInt() // 60fps
     }
 }
