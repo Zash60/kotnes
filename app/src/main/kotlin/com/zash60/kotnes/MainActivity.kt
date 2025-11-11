@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+// IMPORT ADICIONADO PARA CORRIGIR O ERRO
 import com.zash60.kotnes.ui.EmulatorView
 
 class MainActivity : ComponentActivity() {
