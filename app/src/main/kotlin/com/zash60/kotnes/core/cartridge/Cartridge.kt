@@ -4,12 +4,10 @@ import com.zash60.kotnes.core.ext.read
 import com.zash60.kotnes.core.ext.readAsHex
 import com.zash60.kotnes.core.ext.readAsInt
 import java.io.File
-
 class Cartridge(rom: File) {
     val program: ByteArray
     val character: ByteArray
     val isHorizontalMirror: Boolean
-
     init {
         val romData = rom.inputStream()
         val magicBytes = romData.readAsHex(4)
@@ -27,12 +25,9 @@ class Cartridge(rom: File) {
         program = romData.read(prgSize)
         character = romData.read(chrSize)
     }
-
     companion object {
         const val MAGIC_BYTES = "4E45531A"
-
         const val HEADER_SIZE = 0x10
         const val PRG_PAGE_SIZE = 0x4000
         const val CHR_PAGE_SIZE = 0x2000
-    }
 }

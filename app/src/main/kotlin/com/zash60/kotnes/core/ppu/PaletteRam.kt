@@ -1,10 +1,16 @@
 package com.zash60.kotnes.core.ppu
+import com.zash60.kotnes.core.apu.Apu
+import com.zash60.kotnes.core.cpu.Cpu
+import com.zash60.kotnes.core.ext.update
+import com.zash60.kotnes.core.ext.isSetUInt
+import com.zash60.kotnes.core.ext.isSetUByte
+import com.zash60.kotnes.core.ext.extract
+import com.zash60.kotnes.core.ext.toUnsignedInt
+import com.zash60.kotnes.core.ext.toInt
 
 import com.zash60.kotnes.core.ram.Ram
-
 class PaletteRam {
     private val ram = Ram(0x20)
-
     val data
         get() =
             (0 until ram.size).map {
@@ -16,19 +22,14 @@ class PaletteRam {
                     else -> data
                 }
             }.toIntArray()
-
     fun write(addr: Int, data: Int) {
         ram.write(calcPaletteAddr(addr), data)
     }
-
     private fun calcPaletteAddr(addr: Int): Int {
         val paletteAddr = (addr and 0xFF) % 0x20
         return paletteAddr - if (isSpriteMirror(paletteAddr)) 0x10 else 0
-    }
-
     private fun isSpriteMirror(addr: Int) =
         addr == 0x10 || addr == 0x14 || addr == 0x18 || addr == 0x1C
-
     private fun isBackgroundMirror(addr: Int) =
         addr == 0x04 || addr == 0x08 || addr == 0x0c
 }

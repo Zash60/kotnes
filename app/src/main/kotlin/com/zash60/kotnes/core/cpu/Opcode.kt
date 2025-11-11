@@ -5,7 +5,6 @@ data class Opcode(
         val mode: AddressingMode,
         val cycle: Int,
 )
-
 enum class Instruction {
     ADC, SBC, AND, ORA, EOR, ASL, LSR, ROL, ROR, BCC,
     BCS, BEQ, BNE, BVC, BVS, BPL, BMI, BIT, JMP, JSR,
@@ -15,7 +14,6 @@ enum class Instruction {
     TXS, PHA, PLA, PHP, PLP, NOP, NOPD, NOPI, LAX,
     SAX, DCP, ISB, SLO, RLA, SRE, RRA
 }
-
 enum class AddressingMode {
     ACCUMULATOR,
     IMMEDIATE,
@@ -30,8 +28,6 @@ enum class AddressingMode {
     INDIRECT_X,
     INDIRECT_Y,
     INDIRECT
-}
-
 val opcodes = mapOf(
     0x69 to Opcode(Instruction.ADC, AddressingMode.IMMEDIATE, 2),
     0x65 to Opcode(Instruction.ADC, AddressingMode.ZERO_PAGE, 3),
@@ -264,4 +260,3 @@ val opcodes = mapOf(
     0x77 to Opcode(Instruction.RRA, AddressingMode.ZERO_PAGE_X, 6),
     0x7B to Opcode(Instruction.RRA, AddressingMode.ABSOLUTE_Y, 7),
     0x7F to Opcode(Instruction.RRA, AddressingMode.ABSOLUTE_X, 7)
-)

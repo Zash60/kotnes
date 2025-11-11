@@ -3,22 +3,15 @@ package com.zash60.kotnes.core.apu
 class LengthCounter {
     var value: Int = 1
         private set
-
     var isHalt: Boolean = false
-
     fun tick() {
         if (value == 0 || isHalt) return
         value--
     }
-
     fun reset(value: UInt) {
         this.value = requireNotNull(LENGTH_TABLE[value])
-    }
-
     fun disable() {
         value = 0
-    }
-
     companion object {
         // see: https://www.nesdev.org/wiki/APU_Length_Counter
         private val LENGTH_TABLE = mapOf(
@@ -55,5 +48,4 @@ class LengthCounter {
             0b0_0010u to 20,
             0b0_0000u to 10,
         )
-    }
 }

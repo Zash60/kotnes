@@ -1,4 +1,11 @@
 package com.zash60.kotnes.core.cpu
+import com.zash60.kotnes.core.cpu.Cpu
+import com.zash60.kotnes.core.ext.update
+import com.zash60.kotnes.core.ext.isSetUInt
+import com.zash60.kotnes.core.ext.isSetUByte
+import com.zash60.kotnes.core.ext.extract
+import com.zash60.kotnes.core.ext.toUnsignedInt
+import com.zash60.kotnes.core.ext.toInt
 
 import com.zash60.kotnes.core.apu.Apu
 import com.zash60.kotnes.core.cartridge.Rom
@@ -6,7 +13,6 @@ import com.zash60.kotnes.core.dma.Dma
 import com.zash60.kotnes.core.pad.Pad
 import com.zash60.kotnes.core.ppu.Ppu
 import com.zash60.kotnes.core.ram.Ram
-
 class CpuBus(
     private val ppu: Ppu,
     private val apu: Apu,
@@ -25,18 +31,14 @@ class CpuBus(
                 val offset = -if (rom.size <= 0x4000) 0xC000 else 0x8000
                 rom.read(addr + offset)
             }
-
             addr >= 0x8000 -> rom.read(addr - 0x8000)
             else -> 0
         }
-
     fun write(addr: Int, data: Int) {
-        when {
             addr < 0x2000 -> ram.write(addr % 0x800, data)
             addr < 0x4000 -> ppu.write((addr - 0x2000) % 8, data)
             addr == 0x4014 -> dma.write(data)
             addr == 0x4016 -> pad.write(data)
             addr < 0x4020 -> apu.write(addr - 0x4000, data.toUByte())
-        }
     }
 }

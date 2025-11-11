@@ -1,7 +1,13 @@
 package com.zash60.kotnes.core.cpu
+import com.zash60.kotnes.core.apu.Apu
+import com.zash60.kotnes.core.cpu.Cpu
+import com.zash60.kotnes.core.ext.update
+import com.zash60.kotnes.core.ext.isSetUInt
+import com.zash60.kotnes.core.ext.isSetUByte
+import com.zash60.kotnes.core.ext.extract
+import com.zash60.kotnes.core.ext.toUnsignedInt
 
 import com.zash60.kotnes.core.ext.toInt
-
 class CpuRegister {
     var a = 0 // accumulator
     var x = 0 // index register
