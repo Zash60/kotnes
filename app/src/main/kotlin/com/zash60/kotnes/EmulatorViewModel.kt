@@ -5,8 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-// IMPORT CORRIGIDO PARA APONTAR PARA A LOCALIZAÇÃO CORRETA DA UI
-import com.zash60.kotnes.core.ui.*
+import com.zash60.kotnes.ui.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -25,13 +24,10 @@ class EmulatorViewModel : ViewModel() {
                     pixelBuffer[i] = (0xFF000000.toInt() or (0..0xFFFFFF).random())
                 }
 
-                // Atualiza o bitmap com os novos pixels
                 bitmap.setPixels(pixelBuffer, 0, SCREEN_WIDTH, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
 
-                // Envia o bitmap atualizado para a UI
                 screenBitmap.value = bitmap.asImageBitmap()
 
-                // Aprox. 60 FPS
                 delay(16)
             }
         }
