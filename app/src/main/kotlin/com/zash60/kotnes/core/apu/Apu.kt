@@ -1,8 +1,9 @@
 package com.zash60.kotnes.core.apu
 
-import com.zash60.kotnes.core.cpu.Cpu // IMPORT CORRIGIDO
-import com.zash60.kotnes.core.ext.toInt // IMPORT CORRIGIDO
-import com.zash60.kotnes.core.ext.isSetUByte // IMPORT CORRIGIDO
+import com.zash60.kotnes.core.cpu.Cpu
+import com.zash60.kotnes.core.ext.toInt
+// IMPORT ADICIONADO PARA CORRIGIR O ERRO
+import com.zash60.kotnes.core.ext.isSetUByte
 
 class Apu(
     private val pulse1: PulseChannel,
