@@ -1,14 +1,14 @@
-package apu
+package com.zash60.kotnes.core.apu
 
-import cpu.Cpu
-import ext.toInt
+import com.zash60.kotnes.core.cpu.Cpu
+import com.zash60.kotnes.core.ext.toInt
 
 class Apu(
     private val pulse1: PulseChannel,
     private val pulse2: PulseChannel,
     private val triangle: TriangleChannel,
     private val noise: NoiseChannel,
-    private val speaker: Speaker,
+    // A referência ao 'speaker' foi removida do construtor
 ) {
 
     private val frameCounter = FrameCounter(
@@ -93,7 +93,7 @@ class Apu(
     }
 
     fun flush() {
-        speaker.flush()
+        // speaker.flush() // Chamada comentada
     }
 
     private fun onCpuCycle() {
@@ -134,12 +134,13 @@ class Apu(
                 triangle.output.toByte() * 0.00851 +
                 noise.output.toByte() * 0.00494
         // TODO: low & high -pass filter
-        speaker.write(mixed)
+        // speaker.write(mixed) // Chamada comentada
     }
 
     companion object {
         const val APU_HZ = 240
 
-        private const val MIXER_STEP_CYCLES = Cpu.CPU_HZ / Speaker.SAMPLE_RATE
+        // Valor fixo para substituir o cálculo que dependia do Speaker
+        private const val MIXER_STEP_CYCLES = 40 // Era: Cpu.CPU_HZ / Speaker.SAMPLE_RATE
     }
 }
