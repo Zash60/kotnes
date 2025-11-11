@@ -2,7 +2,7 @@ package com.zash60.kotnes.core.apu
 
 import com.zash60.kotnes.core.cpu.Cpu
 import com.zash60.kotnes.core.ext.toInt
-// IMPORT ADICIONADO PARA CORRIGIR O ERRO
+// IMPORT VERIFICADO E CORRIGIDO
 import com.zash60.kotnes.core.ext.isSetUByte
 
 class Apu(
@@ -21,7 +21,7 @@ class Apu(
     private var accumulativeCpuCyclesForApuCycle = 0
 
     fun read(addr: Int): Int {
-        @Suppress("UNREACHABLE_CODE") // false positive
+        @Suppress("UNREACHABLE_CODE")
         return when (addr) {
             0x15 -> {
                 val p1 = (pulse1.lengthCounterValue > 0).toInt()
@@ -111,8 +111,6 @@ class Apu(
         noise.tickEnvelope()
         triangle.tickLinearCounter()
     }
-
-
 
     private fun onHalfFrame() {
         pulse1.tickLengthCounter()
