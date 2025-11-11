@@ -1,16 +1,18 @@
-import apu.*
-import cartridge.Cartridge
-import cartridge.Rom
-import cpu.Cpu
-import cpu.CpuBus
-import dma.Dma
-import ext.toUnsignedInt
-import interrupts.Interrupts
-import pad.KeyEvent
-import pad.Pad
-import ppu.Canvas
-import ppu.Ppu
-import ram.Ram
+package com.zash60.kotnes.core
+
+import com.zash60.kotnes.core.apu.*
+import com.zash60.kotnes.core.cartridge.Cartridge
+import com.zash60.kotnes.core.cartridge.Rom
+import com.zash60.kotnes.core.cpu.Cpu
+import com.zash60.kotnes.core.cpu.CpuBus
+import com.zash60.kotnes.core.dma.Dma
+import com.zash60.kotnes.core.ext.toUnsignedInt
+import com.zash60.kotnes.core.interrupts.Interrupts
+import com.zash60.kotnes.core.pad.KeyEvent
+import com.zash60.kotnes.core.pad.Pad
+import com.zash60.kotnes.core.ppu.Canvas
+import com.zash60.kotnes.core.ppu.Ppu
+import com.zash60.kotnes.core.ram.Ram
 import kotlin.math.round
 
 class Emulator(
@@ -49,8 +51,8 @@ class Emulator(
         noise = NoiseChannel(
             envelopeGenerator = EnvelopeGenerator(),
             lengthCounter = LengthCounter(),
-        ),
-        speaker = Speaker(),
+        )
+        // A linha 'speaker = Speaker()' foi removida daqui
     )
     private val wRam = Ram(0x2048)
     private val prgRom = Rom(cartridge.program)
@@ -103,7 +105,7 @@ class Emulator(
                 break
             }
         }
-        apu.flush()
+        // apu.flush() // Chamada comentada
     }
 
     companion object {
