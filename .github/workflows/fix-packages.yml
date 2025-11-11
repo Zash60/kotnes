@@ -1,0 +1,79 @@
+# Nome do workflow
+name: Fix Kotlin Packages and Imports
+
+# Gatilho: Apenas manual (workflow_dispatch)
+on:
+  workflow_dispatch:
+
+jobs:
+  fix-and-commit:
+    runs-on: ubuntu-latest
+
+    # Permissões para que o workflow possa fazer commit no seu repositório
+    permissions:
+      contents: write
+
+    steps:
+      # 1. Baixa o código do repositório
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Roda o script de correção de pacotes e imports
+      - name: Run Package Refactor Script
+        run: |
+          # Define as variáveis principais
+          CORE_SRC_DIR="app/src/main/kotlin/com/zash60/kotnes/core"
+          BASE_KOTLIN_DIR="app/src/main/kotlin"
+          BASE_PACKAGE="com.zash60.kotnes.core"
+
+          # Lista de todos os seus sub-pacotes
+          SUB_PACKAGES=("apu" "cartridge" "cpu" "dma" "exception" "ext" "interrupts" "pad" "ppu" "ram" "util")
+
+          echo "Starting package and import correction..."
+
+          # Encontra todos os arquivos .kt e itera sobre eles
+          find "$CORE_SRC_DIR" -name "*.kt" | while read file; do
+            echo "Processing file: $file"
+
+            # --- Passo A: Corrige a declaração 'package' ---
+            
+            # Pega o diretório do arquivo (ex: app/src/main/kotlin/com/zash60/kotnes/core/cpu)
+            dir=$(dirname "$file")
+            
+            # Remove a base do diretório Kotlin para obter o caminho do pacote (ex: com/zash60/kotnes/core/cpu)
+            package_path=${dir#"$BASE_KOTLIN_DIR/"}
+            
+            # Substitui as barras por pontos para criar o nome do pacote (ex: com.zash60.kotnes.core.cpu)
+            correct_package=$(echo "$package_path" | sed 's|/|.|g')
+            
+            # Substitui a linha 'package' antiga pela correta no arquivo
+            sed -i "s|^package.*|package $correct_package|" "$file"
+            echo "  - Set package to: $correct_package"
+
+            # --- Passo B: Corrige as declarações 'import' ---
+            
+            # Itera sobre cada sub-pacote para corrigir os imports
+            for sub_package in "${SUB_PACKAGES[@]}"; do
+              # Ex: Procura por "import cpu." e substitui por "import com.zash60.kotnes.core.cpu."
+              sed -i "s|import $sub_package.|import $BASE_PACKAGE.$sub_package.|g" "$file"
+            done
+            echo "  - Updated imports."
+          done
+
+          echo "Script finished processing files."
+
+      # 3. Faz o commit das alterações de volta para o repositório
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # Adiciona todas as alterações feitas nos arquivos
+          git add "$CORE_SRC_DIR"
+          
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "fix(core): Correct package and import statements for Android structure"
+            git push
+          else
+            echo "No changes to commit."
+          fi
