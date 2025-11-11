@@ -1,0 +1,56 @@
+# Nome do workflow que aparecerá na aba "Actions" do GitHub
+name: Build and Test Kotlin Project
+
+# Define os gatilhos (triggers) que iniciarão o workflow
+on:
+  # Executa quando houver um push para a branch "master"
+  push:
+    branches: [ "master" ]
+  # Executa também quando um pull request for aberto ou atualizado para a branch "master"
+  pull_request:
+    branches: [ "master" ]
+
+# Define os jobs que serão executados
+jobs:
+  # O nome do job é "build"
+  build:
+    # O tipo de máquina virtual para executar o job. "ubuntu-latest" é uma boa escolha padrão.
+    runs-on: ubuntu-latest
+
+    # A sequência de passos que o job irá executar
+    steps:
+      # 1. Baixa o código do seu repositório para a máquina virtual
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Configura o ambiente Java (JDK). Kotlin roda na JVM.
+      # O seu projeto é de alguns anos atrás, então Java 11 ou 17 são escolhas seguras.
+      # Se precisar de outra versão, basta alterar o valor de 'java-version'.
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # 3. Configura o cache para as dependências do Gradle
+      # Isso acelera as execuções futuras, pois não será necessário baixar as dependências novamente.
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      # 4. Concede permissão de execução para o Gradle Wrapper
+      # Em ambientes Linux/macOS, o script 'gradlew' precisa ser executável.
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # 5. Executa a tarefa de build do Gradle
+      # O comando "./gradlew build" compila o código, roda os testes e monta o projeto.
+      # A tarefa "check" é ainda mais completa, pois geralmente inclui linting e outras verificações.
+      - name: Build with Gradle
+        run: ./gradlew check
