@@ -5,11 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-// IMPORTANTE: Mude o import abaixo para o caminho correto do seu PPU
-// import com.zash60.kotnes.core.ppu.PPU
-import com.zash60.kotnes.ui.SCREEN_HEIGHT
-import com.zash60.kotnes.ui.SCREEN_WIDTH
-import com.zash60.kotnes.ui.createEmptyBitmap
+// IMPORT ADICIONADO PARA CORRIGIR O ERRO
+import com.zash60.kotnes.ui.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
