@@ -1,5 +1,5 @@
 # Nome do workflow
-name: Fix All Project Files (Packages and Imports)
+name: Fix All Missing Imports
 
 # Gatilho: Apenas manual (workflow_dispatch)
 on:
@@ -18,61 +18,53 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Roda o script principal de correção
-      - name: Run Refactor Script
+      # 2. Roda o script principal de correção de imports
+      - name: Run Import Refactor Script
         run: |
-          # --- PARTE 1: CORRIGIR O CÓDIGO DO EMULADOR (PASTA /core) ---
-          echo "### STARTING CORE REFACTOR ###"
+          echo "### STARTING FINAL IMPORT FIX ###"
           CORE_SRC_DIR="app/src/main/kotlin/com/zash60/kotnes/core"
-          BASE_KOTLIN_DIR="app/src/main/kotlin"
-          BASE_PACKAGE="com.zash60.kotnes.core"
           
-          # Lista de todos os seus sub-pacotes
-          SUB_PACKAGES=("apu" "cartridge" "cpu" "dma" "exception" "ext" "interrupts" "pad" "ppu" "ram" "util")
-
           # Itera em todos os arquivos .kt dentro da pasta /core
           find "$CORE_SRC_DIR" -name "*.kt" | while read file; do
-            echo "Processing Core File: $file"
-
-            # Corrige a declaração 'package'
+            echo "Processing File: $file"
+            
+            # Garante que a declaração do pacote está correta
             dir=$(dirname "$file")
-            package_path=${dir#"$BASE_KOTLIN_DIR/"}
+            package_path=${dir#"app/src/main/kotlin/"}
             correct_package=$(echo "$package_path" | sed 's|/|.|g')
-            sed -i "s|^package.*|package $correct_package|" "$file"
+            sed -i "1s|^.*|package $correct_package|" "$file"
 
-            # Corrige as declarações 'import'
-            for sub_package in "${SUB_PACKAGES[@]}"; do
-              sed -i "s|import $sub_package.|import $BASE_PACKAGE.$sub_package.|g" "$file"
+            # Lista de imports a serem garantidos
+            IMPORTS_TO_ADD=(
+              "com.zash60.kotnes.core.ext.toInt"
+              "com.zash60.kotnes.core.ext.toUnsignedInt"
+              "com.zash60.kotnes.core.ext.extract"
+              "com.zash60.kotnes.core.ext.isSetUByte"
+              "com.zash60.kotnes.core.ext.isSetUInt"
+              "com.zash60.kotnes.core.ext.update"
+              "com.zash60.kotnes.core.cpu.Cpu"
+              "com.zash60.kotnes.core.apu.Apu"
+            )
+
+            # Adiciona os imports que faltam logo após a linha do pacote
+            for import_line in "${IMPORTS_TO_ADD[@]}"; do
+              # Verifica se o import já não existe no arquivo
+              if ! grep -q "import $import_line" "$file"; then
+                # Adiciona o import se o arquivo usa alguma palavra-chave relacionada
+                # (Isso evita adicionar imports desnecessários em todos os arquivos)
+                # Usamos um curinga simples para verificar o uso.
+                if grep -q -E "(toInt|toUnsignedInt|extract|isSetUByte|isSetUInt|update|Cpu|Apu)" "$file"; then
+                  sed -i "/^package /a import $import_line" "$file"
+                  echo "  - Added import: $import_line"
+                fi
+              fi
             done
           done
-          echo "### FINISHED CORE REFACTOR ###"
-
-          # --- PARTE 2: CORRIGIR OS ARQUIVOS DA UI (MainActivity, ViewModel) ---
-          echo "### STARTING UI REFACTOR ###"
-          MAIN_ACTIVITY="app/src/main/kotlin/com/zash60/kotnes/MainActivity.kt"
-          VIEW_MODEL="app/src/main/kotlin/com/zash60/kotnes/EmulatorViewModel.kt"
-          UI_PACKAGE="com.zash60.kotnes.ui"
-
-          # Adiciona o import que falta na MainActivity
-          if ! grep -q "import $UI_PACKAGE" "$MAIN_ACTIVITY"; then
-            sed -i "/package com.zash60.kotnes/a import $UI_PACKAGE.EmulatorView" "$MAIN_ACTIVITY"
-            echo "Fixed import in MainActivity.kt"
-          fi
           
-          # Adiciona o import que falta no EmulatorViewModel
-          if ! grep -q "import $UI_PACKAGE" "$VIEW_MODEL"; then
-            sed -i "/package com.zash60.kotnes/a import $UI_PACKAGE.*" "$VIEW_MODEL"
-            echo "Fixed import in EmulatorViewModel.kt"
-          fi
-          echo "### FINISHED UI REFACTOR ###"
-          
-          # --- PARTE 3: CORRIGIR ARQUIVO CPU.KT (CASO ESPECIAL) ---
-          # O log mostrou que a primeira linha do Cpu.kt estava corrompida.
-          # Este comando garante que a linha 'package' esteja correta.
-          echo "### VERIFYING CPU.KT ###"
-          CPU_FILE="app/src/main/kotlin/com/zash60/kotnes/core/cpu/Cpu.kt"
-          sed -i '1s|.*|package com.zash60.kotnes.core.cpu|' "$CPU_FILE"
-          echo "Ensured correct package in Cpu.kt"
+          # Remove imports duplicados que possam ter sido adicionados
+          find "$CORE_SRC_DIR" -name "*.kt" -exec sh -c 'awk "!seen[\$0]++" "$0" > "$0.tmp" && mv "$0.tmp" "$0"' {} \;
+
+          echo "### FINISHED FINAL IMPORT FIX ###"
 
       # 3. Faz o commit de todas as alterações
       - name: Commit and push changes
@@ -85,7 +77,7 @@ jobs:
           
           # Verifica se há algo para commitar
           if ! git diff-index --quiet HEAD; then
-            git commit -m "fix(project): Refactor all packages and imports for Android"
+            git commit -m "fix(core): Add all missing ext imports and correct packages"
             git push
           else
             echo "No changes were needed."
