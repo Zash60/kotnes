@@ -1,34 +1,24 @@
 package com.zash60.kotnes.core.apu
 
-  import com.zash60.kotnes.core.apu.*
-  import com.zash60.kotnes.core.cartridge.*
-  import com.zash60.kotnes.core.cpu.*
-  import com.zash60.kotnes.core.dma.*
-  import com.zash60.kotnes.core.exception.*
-  import com.zash60.kotnes.core.ext.*
-  import com.zash60.kotnes.core.interrupts.*
-  import com.zash60.kotnes.core.pad.*
-  import com.zash60.kotnes.core.ppu.*
-  import com.zash60.kotnes.core.ram.*
-  import com.zash60.kotnes.core.util.*
-  import java.io.File
-  import java.math.BigInteger
-  import kotlin.math.pow
-  import kotlin.math.round
-  
-
 class LengthCounter {
     var value: Int = 1
         private set
+
     var isHalt: Boolean = false
+
     fun tick() {
         if (value == 0 || isHalt) return
         value--
     }
+
     fun reset(value: UInt) {
         this.value = requireNotNull(LENGTH_TABLE[value])
+    }
+
     fun disable() {
-        value = 0
+        this.value = 0
+    }
+
     companion object {
         // see: https://www.nesdev.org/wiki/APU_Length_Counter
         private val LENGTH_TABLE = mapOf(
@@ -65,4 +55,5 @@ class LengthCounter {
             0b0_0010u to 20,
             0b0_0000u to 10,
         )
+    }
 }
