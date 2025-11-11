@@ -1,4 +1,4 @@
-package cpu
+com.zash60.kotnes.core.cpu
 
 import exception.UnknownOpcodeException
 import ext.toInt
