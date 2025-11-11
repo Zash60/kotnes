@@ -1,0 +1,63 @@
+# Nome do workflow
+name: Refactor Project Structure
+
+# Gatilho: Apenas manual (workflow_dispatch)
+# Isso adicionará um botão "Run workflow" na aba Actions
+on:
+  workflow_dispatch:
+
+jobs:
+  refactor-and-commit:
+    runs-on: ubuntu-latest
+
+    # Permissões para que o workflow possa fazer commit no seu repositório
+    permissions:
+      contents: write
+
+    steps:
+      # 1. Baixa o código do repositório para a máquina virtual
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Define as pastas de origem e destino para facilitar a leitura
+      - name: Set up paths
+        run: |
+          echo "SOURCE_DIR=src/main/kotlin" >> $GITHUB_ENV
+          echo "DEST_DIR=app/src/main/kotlin/com/zash60/kotnes/core" >> $GITHUB_ENV
+
+      # 3. Executa a movimentação dos arquivos
+      - name: Move emulator core code
+        run: |
+          echo "Creating destination directory: ${{ env.DEST_DIR }}"
+          # O -p cria os diretórios pais se não existirem
+          mkdir -p ${{ env.DEST_DIR }}
+          
+          echo "Moving contents from ${{ env.SOURCE_DIR }} to ${{ env.DEST_DIR }}"
+          # O 'shopt -s dotglob' garante que arquivos ocultos (se houver) também sejam movidos
+          # O 'mv *' move todo o conteúdo da pasta de origem para a de destino
+          shopt -s dotglob
+          mv ${{ env.SOURCE_DIR }}/* ${{ env.DEST_DIR }}/
+          
+          echo "Removing old source directory structure"
+          # Remove a pasta 'src' antiga, que agora está vazia
+          rm -rf src
+
+      # 4. Faz o commit das alterações de volta para o repositório
+      - name: Commit and push changes
+        run: |
+          # Configura o Git com um usuário genérico da Action
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # Adiciona todas as alterações ao staging (a nova pasta 'app' e a remoção da pasta 'src')
+          git add app
+          git add src
+          
+          # Verifica se há mudanças. Se houver, faz o commit e o push.
+          # Isso evita um commit vazio se o script for rodado novamente por engano.
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "chore(refactor): Move emulator core to Android structure"
+            git push
+          else
+            echo "No changes to commit."
+          fi
